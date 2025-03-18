@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>银行账户管理</title>
+    <style>
+        body {
+            font-family: "微软雅黑", sans-serif;
+            background: #f0f6ff;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .search-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .search-box input, 
+        .search-box select {
+            padding: 8px;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 200px;
+        }
+        button {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        button:hover {
+            filter: brightness(0.9);
+        }
+        button.danger {
+            background: #e53935;
+        }
+        button.success {
+            background: #43a047;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #1976d2;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        .action-cell {
+            min-width: 120px;
+        }
+        .no-action {
+            color: #999;
+            font-style: italic;
+        }
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .form-row {
+            margin-bottom: 15px;
+        }
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-row input, 
+        .form-row select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .required::after {
+            content: "*";
+            color: #e53935;
+            margin-left: 3px;
+        }
+        .form-actions {
+            margin-top: 25px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🏦 银行账户管理</h2>
+        
+        <div class="search-box">
+            <input type="text" placeholder="卡号" id="searchCard">
+            <input type="text" placeholder="企业名称" id="searchCompany">
+            <select id="searchType">
+                <option value="">全部类型</option>
+                <option value="自有账户">自有账户</option>
+                <option value="共管账户">共管账户</option>
+                <option value="资方内部账户">资方内部账户</option>
+                <option value="外部账户">外部账户</option>
+            </select>
+            <button onclick="loadData()">🔍 查询</button>
+            <button class="success" onclick="openForm('create')">➕ 新建账户</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>卡号</th>
+                    <th>描述</th>
+                    <th>开户银行</th>
+                    <th>支行</th>
+                    <th>归属企业</th>
+                    <th>账户类型</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="dataBody">
+                <!-- 数据动态加载 -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="modal-mask" id="formModal">
+        <div class="modal-content">
+            <h3 id="formTitle">新建银行账户</h3>
+            <form id="accountForm" onsubmit="return submitForm(event)">
+                <div class="form-row">
+                    <label class="required">银行卡号</label>
+                    <input type="text" id="cardNumber" required 
+                           pattern="\d{16,19}" 
+                           title="16-19位数字">
+                </div>
+                <div class="form-row">
+                    <label>账户描述</label>
+                    <input type="text" id="description">
+                </div>
+                <div class="form-row">
+                    <label class="required">开户银行</label>
+                    <input type="text" id="bankName" required>
+                </div>
+                <div class="form-row">
+                    <label>支行名称</label>
+                    <input type="text" id="branchName">
+                </div>
+                <div class="form-row">
+                    <label class="required">归属企业</label>
+                    <input type="text" id="company" required>
+                </div>
+                <div class="form-row">
+                    <label class="required">账户类型</label>
+                    <select id="accountType" required>
+                        <option value="">请选择</option>
+                        <option value="共管账户">共管账户</option>
+                        <option value="资方内部账户">资方内部账户</option>
+                        <option value="外部账户">外部账户</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" onclick="closeModal()">取消</button>
+                    <button type="submit" class="success">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let accounts = [
+            {
+                id: 1001,
+                cardNumber: '6225880012345678',
+                description: '主运营账户',
+                bankName: '中国工商银行',
+                branchName: '北京朝阳支行',
+                company: 'ABC科技有限公司',
+                accountType: '自有账户'
+            },
+            {
+                id: 1002,
+                cardNumber: '6228480098765432',
+                description: '项目共管账户',
+                bankName: '中国建设银行',
+                branchName: '上海浦东支行',
+                company: 'XYZ投资公司',
+                accountType: '共管账户'
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', loadData);
+
+        function loadData() {
+            const tbody = document.getElementById('dataBody');
+            tbody.innerHTML = '';
+            
+            accounts.forEach(account => {
+                const isOwnAccount = account.accountType === '自有账户';
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${account.id}</td>
+                        <td>${maskCardNumber(account.cardNumber)}</td>
+                        <td>${account.description}</td>
+                        <td>${account.bankName}</td>
+                        <td>${account.branchName || '-'}</td>
+                        <td>${account.company}</td>
+                        <td>${account.accountType}</td>
+                        <td class="action-cell">
+                            ${isOwnAccount ? 
+                                '<span class="no-action">受保护账户</span>' : 
+                                `<button onclick="openForm('edit', ${account.id})">编辑</button>
+                                 <button class="danger" onclick="deleteAccount(${account.id})">删除</button>`}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        let currentAction = 'create';
+        let currentEditId = null;
+
+        function openForm(action, id = null) {
+            currentAction = action;
+            currentEditId = id;
+            document.getElementById('formTitle').textContent = 
+                `${action === 'create' ? '新建' : '编辑'}银行账户`;
+            
+            if(action === 'edit') {
+                const account = accounts.find(a => a.id === id);
+                document.getElementById('cardNumber').value = account.cardNumber;
+                document.getElementById('description').value = account.description;
+                document.getElementById('bankName').value = account.bankName;
+                document.getElementById('branchName').value = account.branchName;
+                document.getElementById('company').value = account.company;
+                document.getElementById('accountType').value = account.accountType;
+            } else {
+                document.getElementById('accountForm').reset();
+            }
+            document.getElementById('formModal').style.display = 'flex';
+        }
+
+        function submitForm(e) {
+            e.preventDefault();
+            if(!validateForm()) return false;
+            
+            const formData = {
+                id: currentAction === 'create' ? Date.now() : currentEditId,
+                cardNumber: document.getElementById('cardNumber').value,
+                description: document.getElementById('description').value,
+                bankName: document.getElementById('bankName').value,
+                branchName: document.getElementById('branchName').value,
+                company: document.getElementById('company').value,
+                accountType: document.getElementById('accountType').value
+            };
+            
+            if(currentAction === 'create') {
+                accounts.push(formData);
+            } else {
+                const index = accounts.findIndex(a => a.id === currentEditId);
+                accounts[index] = formData;
+            }
+            
+            alert(`操作成功！`);
+            closeModal();
+            loadData();
+            return false;
+        }
+
+        function deleteAccount(id) {
+            if(confirm('确定要删除该账户？')) {
+                accounts = accounts.filter(a => a.id !== id);
+                loadData();
+            }
+        }
+
+        function validateForm() {
+            const cardNo = document.getElementById('cardNumber');
+            if(!/^\d{16,19}$/.test(cardNo.value)) {
+                alert('银行卡号必须为16-19位数字');
+                cardNo.focus();
+                return false;
+            }
+            return true;
+        }
+
+        function closeModal() {
+            document.getElementById('formModal').style.display = 'none';
+        }
+
+        function maskCardNumber(number) {
+            return number.replace(/(\d{4})\d{8}(\d{4})/, '$1****$2');
+        }
+    </script>
+</body>
+</html>
