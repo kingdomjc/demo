@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资方项目查看</title>
+    <style>
+        :root {
+            --primary: #2c7be5;
+            --secondary: #6e84a3;
+            --danger: #e63757;
+            --border: #e3ebf6;
+            --bg: #f9fbfd;
+        }
+        body {
+            background: var(--bg);
+            padding: 16px;
+            color: #2d3748;
+            font-size: 14px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            padding: 20px;
+        }
+        .section {
+            padding: 16px 0;
+            border-bottom: 2px solid var(--border);
+        }
+        .section:last-child {
+            border-bottom: none;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .data-item {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+        .label {
+            font-weight: 500;
+            color: #4a5568;
+        }
+        .value {
+            display: block;
+            margin-top: 4px;
+            font-size: 14px;
+            color: #2d3748;
+            min-height: 18px; /* 为空时保持高度 */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            background: white;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid var(--border);
+            text-align: left;
+        }
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+        }
+        .btn {
+            display: inline-block;
+            padding: 6px 12px;
+            background: var(--primary);
+            color: white;
+            border-radius: 4px;
+            font-size: 13px;
+            text-decoration: none;
+            text-align: center;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- 基础配置 -->
+    <div class="section">
+        <div class="section-title">基础配置</div>
+        <div class="data-grid">
+            <div class="data-item">
+                <div class="label">资金项目名称</div>
+                <div class="value">项目A</div>
+            </div>
+            <div class="data-item">
+                <div class="label">项目类型</div>
+                <div class="value">-</div>
+            </div>
+            <div class="data-item">
+                <div class="label">支持的订单类型</div>
+                <div class="value">-</div>
+            </div>
+            <div class="data-item">
+                <div class="label">放款日期</div>
+                <div class="value">2025-03-18</div>
+            </div>
+            <div class="data-item">
+                <div class="label">状态</div>
+                <div class="value">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 责任人员 -->
+    <div class="section">
+        <div class="section-title">责任人员</div>
+        <div class="data-grid">
+            <div class="data-item">
+                <div class="label">资金运营负责人</div>
+                <div class="value">张三</div>
+            </div>
+            <div class="data-item">
+                <div class="label">开发负责人</div>
+                <div class="value">-</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 参与方配置 -->
+    <div class="section">
+        <div class="section-title">参与方配置</div>
+        <table>
+            <thead>
+            <tr>
+                <th>类型</th>
+                <th>归属主体</th>
+                <th>状态</th>
+                <th>生效时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>类型A</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td><a href="#" class="btn">查看详情</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 费率配置 -->
+    <div class="section">
+        <div class="section-title">费率配置</div>
+        <table>
+            <thead>
+            <tr>
+                <th>费用项</th>
+                <th>产品类型</th>
+                <th>产品期数</th>
+                <th>生效时间</th>
+                <th>费率</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td><a href="#" class="btn">查看公式</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 预充值配置 -->
+    <div class="section">
+        <div class="section-title">预充值配置</div>
+        <table>
+            <thead>
+            <tr>
+                <th>用途</th>
+                <th>核算内容</th>
+                <th>费用类型</th>
+                <th>预充户公司</th>
+                <th>预充户银行账号</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td>-</td>
+                <td><a href="#" class="btn">查看详情</a></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 备注 -->
+    <div class="section">
+        <div class="section-title">备注</div>
+        <div class="data-item">
+            <div class="value">-</div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

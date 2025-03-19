@@ -31,13 +31,29 @@
             background: white;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            padding: 16px;
+        }
+        .legend {
+            margin-bottom: 16px;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+        }
+        .legend ul {
+            list-style: none;
+        }
+        .legend li {
+            margin-bottom: 4px;
         }
         .section {
             padding: 20px;
-            border-bottom: 3px solid #2c7be5; /* 加粗并使用主色调 */
+            border-bottom: 3px solid var(--primary);
+            margin-bottom: 16px;
         }
         .section:last-child {
             border: none;
+            margin-bottom: 0;
         }
         .section-header {
             display: flex;
@@ -49,6 +65,22 @@
             font-size: 16px;
             font-weight: 600;
             color: var(--primary);
+        }
+        /* 标识样式 */
+        label.required::after {
+            content: "*";
+            color: var(--danger);
+            margin-left: 4px;
+        }
+        label.auto-fixed::after {
+            content: "*";
+            color: var(--secondary);
+            margin-left: 4px;
+        }
+        label.auto-edit::after {
+            content: "*";
+            color: var(--success);
+            margin-left: 4px;
         }
         .form-grid {
             display: grid;
@@ -64,18 +96,13 @@
             font-weight: 500;
             color: #4a5568;
         }
-        label.required::after {
-            content: "*";
-            color: var(--danger);
-            margin-left: 4px;
-        }
-        input, select {
+        input, select, textarea {
             padding: 8px 12px;
             border: 1px solid var(--border);
             border-radius: 6px;
             transition: all 0.2s;
         }
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(44,123,229,0.1);
             outline: none;
@@ -179,13 +206,12 @@
             border-radius: 8px;
             overflow: auto;
         }
-        /* 调整线下结费公式浮窗尺寸 */
         #formulaModal .modal-content {
             width: 90%;
             max-width: 1200px;
             max-height: 90%;
         }
-        /* 线下结费公式内容样式，提取自线下结费公式页面 */
+        /* 线下结费公式内容样式 */
         #formulaModal .formula-content .search-section { margin: 20px 0; }
         #formulaModal .formula-content .form-item { margin-right: 10px; display: inline-block; }
         #formulaModal .formula-content .form-item input { padding: 8px 12px; border: 1px solid #ddd; }
@@ -218,15 +244,15 @@
         #accountModal .modal-content {
             width: 800px;
             max-width: 90%;
-            max-height: 80vh; /* 限制最大高度为视口高度的 80% */
+            max-height: 80vh;
         }
         #accountModal .selected-accounts {
             margin-top: 16px;
             display: flex;
-            flex-direction: column; /* 竖向排列 */
+            flex-direction: column;
             gap: 10px;
-            max-height: 400px; /* 增加竖向空间 */
-            overflow-y: auto; /* 超出高度出现滚动条 */
+            max-height: 400px;
+            overflow-y: auto;
         }
         #accountModal .account-item {
             display: flex;
@@ -248,14 +274,58 @@
         }
         .balance-label {
             font-weight: 600;
-            color: #FF4D4F; /* 品牌绿色 */
+            color: #FF4D4F;
         }
         .capital-flow {
-            color: #4a5568; /* 品牌紫色 */
+            color: #4a5568;
             font-weight: 500;
             padding: 6px 0;
         }
+        /* 让标识说明（?）按钮对齐到 "基础配置" 右上角 */
+        .tooltip {
+            position: relative; /* 让它跟随父级 section-header */
+            background: var(--primary);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            margin-left: auto; /* 让它自动对齐右侧 */
+        }
 
+        /* 让悬浮说明框出现在 ? 按钮的下方 */
+        .tooltip-content {
+            display: none;
+            position: absolute;
+            top: 30px; /* 向下偏移 */
+            right: 0;
+            background: white;
+            color: black;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 220px;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        /* 鼠标悬停显示内容 */
+        .tooltip:hover .tooltip-content {
+            display: block;
+        }
+        /* 费率配置整体标识 */
+        .section.auto-edit .section-title::after {
+            content: "*";
+            color: var(--success);
+            margin-left: 8px;
+        }
+        .section.required .section-title::after {
+            content: "*";
+            color: var(--danger);
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
@@ -265,6 +335,15 @@
         <div class="section">
             <div class="section-header">
                 <div class="section-title">基础配置</div>
+                <!-- 把标识说明按钮放入白色背景内 -->
+                <div class="tooltip">?
+                    <div class="tooltip-content">
+                        <strong>标识说明：</strong>
+                        <div><span style="color: var(--danger);">*</span> 必填项</div>
+                        <div><span style="color: var(--secondary);">*</span> 系统生成（不可修改）</div>
+                        <div><span style="color: var(--success);">*</span> 系统生成（可修改）</div>
+                    </div>
+                </div>
             </div>
             <div class="form-grid">
                 <div class="form-item">
@@ -283,29 +362,29 @@
                     </select>
                 </div>
                 <div class="form-item">
-                    <label class="required">支持的订单类型</label>
+                    <label class="auto-fixed">支持的订单类型</label>
                     <div class="switch-container">
                         <label class="switch-item">
-                            <input type="checkbox" name="irr24">
+                            <input type="checkbox" name="irr24" disabled>
                             <span>IRR24</span>
                         </label>
                         <label class="switch-item">
-                            <input type="checkbox" name="irr36">
+                            <input type="checkbox" name="irr36" disabled>
                             <span>IRR36</span>
                         </label>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="required">签约规模（亿）</label>
+                    <label>签约规模（亿）</label>
                     <input type="number" step="0.01" placeholder="请输入签约规模">
                 </div>
                 <div class="form-item">
-                    <label class="required">放款日期</label>
-                    <input type="date">
+                    <label class="auto-fixed">放款日期</label>
+                    <input type="date" disabled>
                 </div>
                 <div class="form-item">
-                    <label>状态</label>
-                    <select>
+                    <label class="auto-fixed">状态</label>
+                    <select disabled>
                         <option>新建</option>
                         <option>进行中</option>
                         <option>重新修改</option>
@@ -322,16 +401,16 @@
             </div>
             <div class="form-grid">
                 <div class="form-item">
-                    <label>资金运营负责人</label>
-                    <input type="text">
-                </div>
-                <div class="form-item">
-                    <label>开发负责人</label>
-                    <input type="text">
-                </div>
-                <div class="form-item">
-                    <label class="required">业务开发负责人</label>
+                    <label class="required">资金运营负责人</label>
                     <input type="text" required>
+                </div>
+                <div class="form-item">
+                    <label class="required">开发负责人</label>
+                    <input type="text" required>
+                </div>
+                <div class="form-item">
+                    <label>业务开发负责人</label>
+                    <input type="text">
                 </div>
                 <div class="form-item">
                     <label>商户经理</label>
@@ -383,47 +462,47 @@
             </div>
         </div>
 
-        <!-- 线下月结算（原结算设置及费用项） -->
+        <!-- 线下月结算（全部非必填） -->
         <div class="section">
             <div class="section-header">
                 <div class="section-title">线下月结算</div>
             </div>
             <div class="form-grid">
                 <div class="form-item">
-                    <label class="required">是否有月结流水线</label>
+                    <label>是否有月结流水线</label>
                     <div class="radio-group">
                         <label class="radio-item">
-                            <input type="radio" name="flow" required> 是
+                            <input type="radio" name="flow"> 是
                         </label>
                         <label class="radio-item">
-                            <input type="radio" name="flow" required> 否
+                            <input type="radio" name="flow"> 否
                         </label>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="required">是否有月结收款结算</label>
+                    <label>是否有月结收款结算</label>
                     <div class="radio-group">
                         <label class="radio-item">
-                            <input type="radio" name="collection" required> 是
+                            <input type="radio" name="collection"> 是
                         </label>
                         <label class="radio-item">
-                            <input type="radio" name="collection" required> 否
+                            <input type="radio" name="collection"> 否
                         </label>
                     </div>
                 </div>
                 <div class="form-item">
-                    <label class="required">是否有月结付款结算</label>
+                    <label>是否有月结付款结算</label>
                     <div class="radio-group">
                         <label class="radio-item">
-                            <input type="radio" name="payment" required> 是
+                            <input type="radio" name="payment"> 是
                         </label>
                         <label class="radio-item">
-                            <input type="radio" name="payment" required> 否
+                            <input type="radio" name="payment"> 否
                         </label>
                     </div>
                 </div>
             </div>
-            <!-- 费用项区域 -->
+            <!-- 费用项区域依旧保留 -->
             <div class="fees-container" style="margin-top:16px;">
                 <!-- 应收费用项 -->
                 <div class="fee-table receivable">
@@ -494,8 +573,9 @@
             </div>
         </div>
 
-        <!-- 参与方配置 -->
-        <div class="section">
+        <!-- 参与方配置（关键配置标识★） -->
+
+        <div class="section required">
             <div class="section-header">
                 <div class="section-title">参与方配置</div>
                 <button type="button" class="btn btn-success btn-sm">+ 新增参与方</button>
@@ -504,31 +584,38 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>类型</th>
-                        <th>归属主体</th>
-                        <th>状态</th>
-                        <th>生效时间开始</th>
-                        <th>生效时间结束</th>
+                        <th>类型<span class="required"></span></th>
+                        <th>归属主体<span class="required"></span></th>
+                        <th>状态<span class="required"></span></th>
+                        <th>生效时间开始<span class="required"></span></th>
+                        <th>生效时间结束<span class="required"></span></th>
                         <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td>
-                            <select>
+                            <select required>
                                 <option>类型A</option>
                             </select>
                         </td>
                         <td>
-                            <select>
+                            <select required>
                                 <option>主体A</option>
                             </select>
                         </td>
-                        <td>未初始化</td>
-                        <td><input type="date" value="2025-03-18"></td>
-                        <td><input type="date" value="2099-12-31"></td>
+                        <td>
+                            <input type="text" value="未初始化" required>
+                        </td>
+                        <td>
+                            <input type="date" value="2025-03-18" required>
+                        </td>
+                        <td>
+                            <input type="date" value="2099-12-31" required>
+                        </td>
                         <td>
                             <button type="button" class="btn btn-primary btn-sm link-account">关联账号</button>
+                            <button type="button" class="btn btn-secondary btn-sm" onclick="openFeeFlowModal()">费用资金流</button>
                             <button type="button" class="btn btn-danger btn-sm">删除</button>
                         </td>
                     </tr>
@@ -537,7 +624,7 @@
             </div>
         </div>
 
-        <!-- 修改后的项目关联的银行卡部分 -->
+        <!-- 项目关联的银行卡 -->
         <div class="section">
             <div class="section-header">
                 <div class="section-title">项目关联的银行卡</div>
@@ -550,14 +637,15 @@
                     <tr>
                         <th>账户用途</th>
                         <th>银行账号</th>
+                        <th>归属企业</th>
                         <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <!-- 初始数据示例 -->
                     <tr data-id="1">
                         <td>
                             <select class="account-usage" onchange="updateBankAccount(this)">
+                                <option value="">请选择账户用途</option>
                                 <option value="代偿款账户">代偿款账户</option>
                                 <option value="保证金账户">保证金账户</option>
                                 <option value="线下还款账户">线下还款账户</option>
@@ -565,9 +653,13 @@
                         </td>
                         <td>
                             <select class="bank-account" onchange="updateBankAccount(this)">
-                                <option value="6222020000000001">保证金账户-工商银行+北京分行-6222020000000001</option>
-                                <option value="6222020000000002">保证金账户-工商银行+北京分行-6222020000000002</option>
+                                <option value="">请选择银行账号</option>
+                                <option value="6222020000000001" data-enterprise="企业A">自有账户-工商银行-北京分行-6222020000000001</option>
+                                <option value="6222020000000002" data-enterprise="企业B">外部账户-工商银行-北京分行-6222020000000002</option>
                             </select>
+                        </td>
+                        <td class="enterprise">
+                            <span></span>
                         </td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm" onclick="deleteBankCardRow(this)">删除</button>
@@ -584,9 +676,9 @@
                 <h3 style="margin-bottom:16px">关联银行账号</h3>
                 <select class="account-select" style="width:100%">
                     <option value="">请选择银行账号</option>
-                    <option>6222020000000001</option>
-                    <option>6222020000000002</option>
-                    <option>6222020000000003</option>
+                    <option value="6222020000000001" data-enterprise="企业A">自有账户-工商银行-北京分行-6222020000000001</option>
+                    <option value="6222020000000002" data-enterprise="企业B">外部账户-工商银行-北京分行-6222020000000002</option>
+                    <option value="6222020000000003" data-enterprise="企业C">共管账户-工商银行-北京分行-6222020000000003</option>
                 </select>
                 <div class="selected-accounts" id="selectedAccounts"></div>
                 <div style="margin-top:16px;text-align:right">
@@ -595,10 +687,79 @@
             </div>
         </div>
 
-        <!-- 代偿&回购配置 -->
+        <!-- 费用资金流弹窗 -->
+        <div class="modal-mask" id="feeFlowModal" style="display:none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
+            <div class="modal-content" style="background:#fff; padding:20px; border-radius:8px; position: relative; max-width:90%; max-height:90%; overflow:auto;">
+                <button type="button" class="btn btn-danger" style="position: absolute; right: 10px; top: 10px;" onclick="closeFeeFlowModal()">关闭</button>
+                <h2 style="text-align:center;">费用资金流</h2>
+                <div style="text-align:center; margin-top:20px;">
+                    <img src="image.svg" alt="费用资金流" style="max-width:100%; height:auto;">
+                </div>
+            </div>
+        </div>
+
+        <!-- 费率配置（系统自动生成，用户可修改） -->
+        <div class="section auto-edit">
+            <div class="section-header">
+                <div class="section-title">费率配置</div>
+                <button type="button" class="btn btn-success btn-sm" onclick="addFeeRateRow()">+ 添加</button>
+            </div>
+            <div class="table-container">
+                <table id="feeRateTable">
+                    <thead>
+                    <tr>
+                        <th>费用项</th>
+                        <th>产品类型</th>
+                        <th>产品期数</th>
+                        <th>生效时间</th>
+                        <th>费率</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>
+                            <select>
+                                <option value="本金">本金</option>
+                                <option value="利息" selected>利息</option>
+                                <option value="罚息">罚息</option>
+                                <option value="资方担保费">资方担保费</option>
+                                <option value="担保费">担保费</option>
+                                <option value="服务费">服务费</option>
+                                <option value="债务管理费">债务管理费</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option value="irr24" selected>irr24</option>
+                                <option value="irr36">irr36</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                <option value="6" selected>6</option>
+                                <option value="12">12</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" value="/" placeholder="例：2022-01-02～2025-12-31">
+                        </td>
+                        <td>
+                            <input type="text" value="irr6%" placeholder="请输入费率">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteFeeRateRow(this)">删除</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 代偿&回购配置（整体为系统自动生成，不可修改，在标题上加蓝色标记） -->
         <div class="section">
             <div class="section-header">
-                <div class="section-title">代偿&回购</div>
+                <div class="section-title auto-fixed">代偿&回购配置 <span style="color: var(--secondary); margin-left:8px;">*</span></div>
             </div>
             <div class="compensation-header">
                 <div class="balance-display">
@@ -612,26 +773,25 @@
             <div class="form-grid">
                 <!-- 代偿规则 -->
                 <div class="form-item" style="grid-column: span 2;">
-                    <label class="required">代偿规则及触发时间</label>
+                    <label class="auto-fixed">代偿规则及触发时间</label>
                     <div class="input-group">
-                        <select name="compensationRule" required>
+                        <select name="compensationRule" required disabled>
                             <option value="">请选择</option>
                             <option value="d3_plus2h">D+3天+2时</option>
                             <option value="d3_holiday">D+3天（节假提前）</option>
                             <option value="none">无需代偿</option>
                         </select>
                         <span>触发开始时间</span>
-                        <input type="datetime-local" placeholder="开始" required>
+                        <input type="datetime-local" placeholder="开始" required disabled>
                         <span>触发结束时间</span>
-                        <input type="datetime-local" placeholder="结束" required>
+                        <input type="datetime-local" placeholder="结束" required disabled>
                     </div>
                 </div>
-
                 <!-- 回购规则 -->
                 <div class="form-item" style="grid-column: span 2;">
-                    <label class="required">回购规则及触发时间</label>
+                    <label class="auto-fixed">回购规则及触发时间</label>
                     <div class="input-group">
-                        <select name="repurchaseRule" required>
+                        <select name="repurchaseRule" required disabled>
                             <option value="">请选择</option>
                             <option value="3_6">连3累6</option>
                             <option value="3_consecutive">连3期代偿</option>
@@ -641,9 +801,9 @@
                             <option value="none">无需回购</option>
                         </select>
                         <span>触发开始时间</span>
-                        <input type="datetime-local" placeholder="开始" required>
+                        <input type="datetime-local" placeholder="开始" required disabled>
                         <span>触发结束时间</span>
-                        <input type="datetime-local" placeholder="结束" required>
+                        <input type="datetime-local" placeholder="结束" required disabled>
                     </div>
                 </div>
             </div>
@@ -717,8 +877,8 @@
             </div>
         </div>
 
-        <!-- 预充值配置 -->
-        <div class="section">
+        <!-- 预充值配置（关键配置标识★） -->
+        <div class="section required">
             <div class="section-header">
                 <div class="section-title">预充值配置</div>
                 <button type="button" class="btn btn-success btn-sm">+ 新增配置</button>
@@ -728,38 +888,38 @@
                 <table>
                     <thead>
                     <tr>
-                        <th>用途</th>
-                        <th>核算内容</th>
-                        <th>费用类型</th>
-                        <th>预充户公司</th>
-                        <th>预充户银行账号</th>
+                        <th>用途<span class="required"></span></th>
+                        <th>核算内容<span class="required"></span></th>
+                        <th>费用类型<span class="required"></span></th>
+                        <th>预充户公司<span class="required"></span></th>
+                        <th>预充户银行账号<span class="required"></span></th>
                         <th>操作</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <td>
-                            <select>
+                            <select required>
                                 <option>用途A</option>
                             </select>
                         </td>
                         <td>
-                            <select>
+                            <select required>
                                 <option>核算A</option>
                             </select>
                         </td>
                         <td>
-                            <select>
+                            <select required>
                                 <option>类型A</option>
                             </select>
                         </td>
                         <td>
-                            <select>
+                            <select required>
                                 <option>公司A</option>
                             </select>
                         </td>
                         <td>
-                            <select>
+                            <select required>
                                 <option>账号A</option>
                             </select>
                         </td>
@@ -880,14 +1040,13 @@
 </div>
 
 <script>
-    // 采用事件委托绑定所有“查看”按钮（无论初始还是动态添加的）
+    // 以下事件及动态行为代码保持原样
     document.addEventListener('click', function(e) {
         if(e.target && e.target.classList.contains('formula-btn')){
             document.getElementById('formulaModal').style.display = 'flex';
         }
     });
 
-    // 新增应收费用项：使用下拉框选择，新行追加到末尾
     function addReceivableRow() {
         var tbody = document.getElementById('receivableTable').tBodies[0];
         var row = tbody.insertRow(-1);
@@ -897,7 +1056,6 @@
         cell2.innerHTML = '<button type="button" class="btn btn-primary btn-sm formula-btn">查看</button> <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">删除</button>';
     }
 
-    // 新增应付费用项：使用下拉框选择，新行追加到末尾
     function addPayableRow() {
         var tbody = document.getElementById('payableTable').tBodies[0];
         var row = tbody.insertRow(-1);
@@ -907,12 +1065,10 @@
         cell2.innerHTML = '<button type="button" class="btn btn-primary btn-sm formula-btn">查看</button> <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">删除</button>';
     }
 
-    // 删除行
     function deleteRow(btn) {
         btn.closest('tr').remove();
     }
 
-    // 关联账号弹窗处理
     document.querySelectorAll('.link-account').forEach(btn => {
         btn.addEventListener('click', () => {
             document.getElementById('accountModal').style.display = 'flex';
@@ -923,20 +1079,48 @@
     const selectedContainer = document.getElementById('selectedAccounts');
 
     accountSelect.addEventListener('change', function() {
-        if(this.value) {
+        if (this.value) {
+            const selectedOption = this.options[this.selectedIndex];
+            const accountText = selectedOption.text;
+            const enterprise = selectedOption.getAttribute('data-enterprise') || '';
             const item = document.createElement('div');
             item.className = 'account-item';
             item.innerHTML = `
-                    <span>${this.value}</span>
-                    <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">删除</button>
-                `;
+              <span data-value="${this.value}" data-enterprise="${enterprise}">${accountText}</span>
+              <button class="btn btn-danger btn-sm" onclick="this.parentElement.remove()">删除</button>
+            `;
             selectedContainer.appendChild(item);
             this.value = '';
         }
     });
 
     function closeAccountModal() {
-        document.getElementById('accountModal').style.display = 'none';
+        const modal = document.getElementById('accountModal');
+        modal.style.display = 'none';
+        const accountItems = selectedContainer.querySelectorAll('.account-item span');
+        accountItems.forEach(item => {
+            const accountText = item.textContent.trim();
+            const enterprise = item.getAttribute('data-enterprise') || '';
+            const tbody = document.getElementById('bankCardTable').tBodies[0];
+            const newRow = tbody.insertRow(-1);
+            newRow.innerHTML = `
+              <td>
+                  <select class="account-usage">
+                      <option value="">请选择账户用途</option>
+                      <option value="代偿款账户">代偿款账户</option>
+                      <option value="保证金账户">保证金账户</option>
+                      <option value="线下还款账户">线下还款账户</option>
+                  </select>
+              </td>
+              <td>${accountText}</td>
+              <td class="enterprise">
+                  <span>${enterprise}</span>
+              </td>
+              <td>
+                  <button type="button" class="btn btn-danger btn-sm" onclick="deleteBankCardRow(this)">删除</button>
+              </td>
+            `;
+        });
         selectedContainer.innerHTML = '';
     }
 
@@ -944,7 +1128,6 @@
         if(e.target.classList.contains('modal-mask')) closeAccountModal();
     });
 
-    // 关闭线下结费公式弹窗
     function closeFormulaModal() {
         document.getElementById('formulaModal').style.display = 'none';
     }
@@ -953,8 +1136,8 @@
         if(e.target.classList.contains('modal-mask')) closeFormulaModal();
     });
 
-    // 其他区域动态添加行示例（如有需要）
     document.querySelectorAll('.btn-success').forEach(btn => {
+        if (btn.getAttribute('onclick')) return;
         btn.addEventListener('click', () => {
             const table = btn.closest('.section').querySelector('tbody');
             const newRow = table.insertRow(-1);
@@ -962,56 +1145,117 @@
         });
     });
 
-    // 删除行逻辑（其他区域）
     document.addEventListener('click', (e) => {
         if (e.target.classList.contains('btn-danger') && !e.target.closest('table').id.match(/receivableTable|payableTable/)) {
             e.target.closest('tr').remove();
         }
     });
-    // 新增银行卡行
+
     function addBankCardRow() {
         const tbody = document.getElementById('bankCardTable').tBodies[0];
         const newRow = tbody.insertRow(-1);
         newRow.innerHTML = `
-        <td>
-            <select class="account-usage" onchange="updateBankAccount(this)">
-                <option value="">请选择账户用途</option>
-                <option value="代偿款账户">代偿款账户</option>
-                <option value="保证金账户">保证金账户</option>
-                <option value="线下还款账户">线下还款账户</option>
-            </select>
-        </td>
-        <td>
-            <select class="bank-account" onchange="updateBankAccount(this)">
-                <option value="">请选择银行账号</option>
-                <option value="6222020000000001">保证金账户-工商银行+北京分行-6222020000000001</option>
-                <option value="6222020000000002">保证金账户-工商银行+北京分行-6222020000000002</option>
-            </select>
-        </td>
-        <td>
-            <button type="button" class="btn btn-danger btn-sm" onclick="deleteBankCardRow(this)">删除</button>
-        </td>
-    `;
+          <td>
+              <select class="account-usage" onchange="updateBankAccount(this)">
+                  <option value="">请选择账户用途</option>
+                  <option value="代偿款账户">代偿款账户</option>
+                  <option value="保证金账户">保证金账户</option>
+                  <option value="线下还款账户">线下还款账户</option>
+              </select>
+          </td>
+          <td>
+              <select class="bank-account" onchange="updateBankAccount(this)">
+                  <option value="">请选择银行账号</option>
+                  <option value="6222020000000001" data-enterprise="企业A">自有账户-工商银行-北京分行-6222020000000001</option>
+                  <option value="6222020000000002" data-enterprise="企业B">外部账户-工商银行-北京分行-6222020000000002</option>
+              </select>
+          </td>
+          <td class="enterprise">
+              <span></span>
+          </td>
+          <td>
+              <button type="button" class="btn btn-danger btn-sm" onclick="deleteBankCardRow(this)">删除</button>
+          </td>
+        `;
     }
 
-    // 更新银行账号显示
     function updateBankAccount(select) {
         const row = select.closest('tr');
-        const usageSelect = row.querySelector('.account-usage');
         const accountSelect = row.querySelector('.bank-account');
-
-        // 验证必填项
-        if (!usageSelect.value || !accountSelect.value) return;
-
-        // 格式化显示内容
-        usageSelect.parentElement.textContent = usageSelect.options[usageSelect.selectedIndex].text;
-        accountSelect.parentElement.textContent = accountSelect.options[accountSelect.selectedIndex].text;
+        if (!accountSelect || !accountSelect.value) return;
+        const selectedOption = accountSelect.options[accountSelect.selectedIndex];
+        const enterprise = selectedOption.getAttribute('data-enterprise') || '';
+        const enterpriseSpan = row.querySelector('.enterprise span');
+        if (enterpriseSpan) {
+            enterpriseSpan.textContent = enterprise;
+        }
+        const usageSelect = row.querySelector('.account-usage');
+        if (usageSelect && usageSelect.value) {
+            usageSelect.parentElement.textContent = usageSelect.options[usageSelect.selectedIndex].text;
+            accountSelect.parentElement.textContent = selectedOption.text;
+        }
     }
 
-    // 删除银行卡行
     function deleteBankCardRow(btn) {
         btn.closest('tr').remove();
     }
+
+    function addFeeRateRow() {
+        const tbody = document.getElementById('feeRateTable').tBodies[0];
+        const newRow = tbody.insertRow(-1);
+        newRow.innerHTML = `
+          <td>
+            <select>
+              <option value="本金">本金</option>
+              <option value="利息">利息</option>
+              <option value="罚息">罚息</option>
+              <option value="资方担保费">资方担保费</option>
+              <option value="担保费">担保费</option>
+              <option value="服务费">服务费</option>
+              <option value="债务管理费">债务管理费</option>
+            </select>
+          </td>
+          <td>
+            <select>
+              <option value="irr24">irr24</option>
+              <option value="irr36">irr36</option>
+            </select>
+          </td>
+          <td>
+            <select>
+              <option value="6">6</option>
+              <option value="12">12</option>
+            </select>
+          </td>
+          <td>
+            <input type="text" placeholder="例：2022-01-02～2025-12-31">
+          </td>
+          <td>
+            <input type="text" placeholder="请输入费率">
+          </td>
+          <td>
+            <button type="button" class="btn btn-danger btn-sm" onclick="deleteFeeRateRow(this)">删除</button>
+          </td>
+      `;
+    }
+
+    function deleteFeeRateRow(btn) {
+        btn.closest('tr').remove();
+    }
+
+    function openFeeFlowModal() {
+        document.getElementById('feeFlowModal').style.display = 'flex';
+    }
+
+    function closeFeeFlowModal() {
+        document.getElementById('feeFlowModal').style.display = 'none';
+    }
+
+    document.getElementById('feeFlowModal').addEventListener('click', function(e) {
+        if (e.target.classList.contains('modal-mask')) {
+            closeFeeFlowModal();
+        }
+    });
 </script>
 </body>
 </html>

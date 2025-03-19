@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>资金项目管理</title>
+    <style>
+        .search-section { margin: 20px 0; }
+        .form-item { margin-right: 10px; display: inline-block; }
+        .form-item input { padding: 8px 12px; border: 1px solid #ddd; }
+        .btn { padding: 8px 16px; margin-left: 5px; background: #333; color: white; border: none; cursor: pointer; }
+        .btn-red { background: #f44336; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        .nested-table { width: 100%; margin-top: 5px; }
+    </style>
+</head>
+<body>
+<div class="search-section">
+    <div class="form-item">
+        <label>资金方项目</label><br>
+        <input type="text" placeholder="请选择">
+    </div>
+    <div class="form-item">
+        <label>费用名目</label><br>
+        <input type="text" placeholder="请选择">
+    </div>
+    <button class="btn">重置</button>
+    <button class="btn">查询</button>
+    <button class="btn">新建</button>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th></th>
+        <th>资金方项目</th>
+        <th>公式类型</th>
+        <th>费用名目</th>
+        <th>状态</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td><input type="checkbox"></td>
+        <td>利宏-昆仑银行</td>
+        <td>在贷余额*费率</td>
+        <td>通道费</td>
+        <td>启用</td>
+        <td>
+            <button class="btn">创建计算公式</button>
+            <button class="btn btn-red">编辑</button>
+            <button class="btn btn-red">删除</button>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="6">
+            <table class="nested-table">
+                <thead>
+                <tr>
+                    <th>公式</th>
+                    <th>产品类型</th>
+                    <th>产品期数</th>
+                    <th>订单利率</th>
+                    <th>订单打款时间范围</th>
+                    <th>当月放款量范围</th>
+                    <th>在贷日期范围</th>
+                    <th>自定义规则</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>在贷余额*0.3%/365</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>
+                        <button class="btn btn-red">编辑</button>
+                        <button class="btn btn-red">删除</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td><input type="checkbox"></td>
+        <td>长银消金-分润</td>
+        <td>实还费用*费率</td>
+        <td>技术服务费</td>
+        <td>启用</td>
+        <td>
+            <button class="btn">创建计算公式</button>
+            <button class="btn btn-red">编辑</button>
+            <button class="btn btn-red">删除</button>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="6">
+            <table class="nested-table">
+                <thead>
+                <tr>
+                    <th>公式</th>
+                    <th>产品类型</th>
+                    <th>产品期数</th>
+                    <th>订单利率</th>
+                    <th>订单打款时间范围</th>
+                    <th>当月放款量范围</th>
+                    <th>在贷日期范围</th>
+                    <th>自定义规则</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>(利息+罚息)*30%</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>/</td>
+                    <td>
+                        <button class="btn btn-red">编辑</button>
+                        <button class="btn btn-red">删除</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
