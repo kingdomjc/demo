@@ -375,8 +375,8 @@
                     </div>
                 </div>
                 <div class="form-item">
-                    <label>签约规模（亿）</label>
-                    <input type="number" step="0.01" placeholder="请输入签约规模">
+                    <label class="auto-fixed">签约规模（亿）</label>
+                    <input type="number" step="0.01" disabled>
                 </div>
                 <div class="form-item">
                     <label class="auto-fixed">放款日期</label>
@@ -699,6 +699,63 @@
             </div>
         </div>
 
+        <!-- 资金流配置模块（放在费率配置之前） -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">资金流配置</div>
+            </div>
+            <!-- 新增列按钮放在表格下方 -->
+            <div style="margin-top:8px;">
+                <button type="button" class="btn btn-success btn-sm" onclick="addNewColumn()">新增列</button>
+            </div>
+            <!-- 表格容器增加 overflow-x: auto -->
+            <div class="table-container" style="overflow-x:auto;">
+                <table id="capitalFlowTable" class="capital-flow-table" border="1" cellspacing="0" cellpadding="6">
+                    <thead>
+                    <tr>
+                        <!-- 固定列：场景，右侧带新增整组按钮 -->
+                        <th>
+                            场景
+                            <button type="button" class="btn btn-success btn-sm" onclick="addSceneGroup()">＋</button>
+                        </th>
+                        <!-- 固定列：细分场景 -->
+                        <th>细分场景</th>
+                        <!-- 动态列：费用项 -->
+                        <th>
+                            <input type="text" value="本金" style="border:none; background:transparent; text-align:center;">
+                            <button type="button" class="small-btn" onclick="deleteColumnAt(this)">x</button>
+                        </th>
+                        <th>
+                            <input type="text" value="利息" style="border:none; background:transparent; text-align:center;">
+                            <button type="button" class="small-btn" onclick="deleteColumnAt(this)">x</button>
+                        </th>
+                        <th>
+                            <input type="text" value="罚息" style="border:none; background:transparent; text-align:center;">
+                            <button type="button" class="small-btn" onclick="deleteColumnAt(this)">x</button>
+                        </th>
+                        <!-- 操作列 -->
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- 初始场景组（组头），其中场景单元格右侧带新增子行按钮 -->
+                    <tr class="scene-group">
+                        <td class="scene-cell" rowspan="1">
+                            <input type="text" value="请输入场景">
+                            <button type="button" class="btn btn-success btn-sm" onclick="addSubRow(this)">＋</button>
+                        </td>
+                        <td><input type="text" placeholder="请输入细分场景"></td>
+                        <td><input type="text" placeholder="请输入资金流"></td>
+                        <td><input type="text" placeholder="请输入资金流"></td>
+                        <td><input type="text" placeholder="请输入资金流"></td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow2(this)">删除</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
         <!-- 费率配置（系统自动生成，用户可修改） -->
         <div class="section auto-edit">
             <div class="section-header">
@@ -763,10 +820,6 @@
                 <div class="section-title auto-fixed">代偿&回购配置 <span style="color: var(--secondary); margin-left:8px;">*</span></div>
             </div>
             <div class="compensation-header">
-                <div class="balance-display">
-                    <span class="balance-label">可用预充户余额: 10000.00 元</span>
-                    <a href="precharge_balance.html" class="btn btn-sm btn-primary">查看预充户余额详情</a>
-                </div>
                 <div class="capital-flow">
                     资金流路径: 三农信（代偿回购方）->临商银行（资金方）
                 </div>
@@ -884,6 +937,20 @@
                 <div class="section-title">预充值配置</div>
                 <button type="button" class="btn btn-success btn-sm">+ 新增配置</button>
                 <a href="precharge_projects.html" class="btn btn-secondary btn-sm">跳转至预充值项目聚合</a>
+            </div>
+            <div class="compensation-header">
+                <div class="balance-display">
+                    <span class="balance-label">代偿户-预充户余额: 10000.00 元</span>
+                    <a href="precharge_balance.html" class="btn btn-sm btn-primary">查看预充户余额详情</a>
+                </div>
+                <div class="balance-display">
+                    <span class="balance-label">代收户-预充户余额: 10000.00 元</span>
+                    <a href="precharge_balance.html" class="btn btn-sm btn-primary">查看预充户余额详情</a>
+                </div>
+                <div class="balance-display">
+                    <span class="balance-label">保证金-预充户余额: 10000.00 元</span>
+                    <a href="precharge_balance.html" class="btn btn-sm btn-primary">查看预充户余额详情</a>
+                </div>
             </div>
             <div class="table-container">
                 <table>
@@ -1257,6 +1324,146 @@
             closeFeeFlowModal();
         }
     });
+    // 新增列：在操作列前插入一列（固定列不受影响）
+    function addNewColumn() {
+        let table = document.getElementById("capitalFlowTable");
+        let headerRow = table.tHead.rows[0];
+        let opColIndex = headerRow.cells.length - 1; // 操作列为最后一列
+        // 新建 header 单元格，内含 input 和一个小 x 按钮
+        let newTh = document.createElement("th");
+        newTh.innerHTML = '<input type="text" placeholder="请输入标题" style="border:none; background:transparent; text-align:center;">' +
+            '<button type="button" class="small-btn" onclick="deleteColumnAt(this)">x</button>';
+        headerRow.insertBefore(newTh, headerRow.cells[opColIndex]);
+
+        // 为 tbody 中每一行插入新单元格，在操作列前面
+        let tbody = table.tBodies[0];
+        for (let row of tbody.rows) {
+            // 注意：对于组头行（包含场景 cell），新单元格应插入在操作列前；
+            let cellCount = row.cells.length;
+            let newTd = document.createElement("td");
+            newTd.innerHTML = '<input type="text" placeholder="请输入">';
+            row.insertBefore(newTd, row.cells[cellCount - 1]);
+        }
+    }
+
+    // 删除列：删除当前 th 及所有 tbody 中对应的单元格
+    function deleteColumnAt(btn) {
+        let th = btn.parentElement;
+        let headerRow = th.parentElement;
+        let colIndex = Array.from(headerRow.children).indexOf(th);
+        // 不允许删除固定列（索引 0 和 1）
+        if (colIndex < 2) {
+            alert("固定列不可删除！");
+            return;
+        }
+        headerRow.removeChild(th);
+        let tbody = document.getElementById("capitalFlowTable").tBodies[0];
+        for (let row of tbody.rows) {
+            if (row.cells[colIndex]) {
+                row.deleteCell(colIndex);
+            }
+        }
+    }
+
+    // 新增整组场景（组头）：在 tbody 最后添加一行完整的组头行
+    function addSceneGroup() {
+        let tbody = document.getElementById("capitalFlowTable").tBodies[0];
+        let headerRow = document.getElementById("capitalFlowTable").tHead.rows[0];
+        let colCount = headerRow.cells.length;
+        let newRow = document.createElement("tr");
+        newRow.className = "scene-group";
+        // 第一列：场景 cell（带新增子行按钮）
+        let tdScene = document.createElement("td");
+        tdScene.className = "scene-cell";
+        tdScene.setAttribute("rowspan", "1");
+        tdScene.innerHTML = '<input type="text" value="请输入场景">' +
+            '<button type="button" class="btn btn-success btn-sm" onclick="addSubRow(this)">＋</button>';
+        newRow.appendChild(tdScene);
+        // 其他列：从细分场景到动态列，根据 header 结构（操作列除外）
+        for (let i = 1; i < colCount - 1; i++) {
+            let td = document.createElement("td");
+            // 对于第二列（细分场景）给提示，其余列默认空
+            if (i === 1) {
+                td.innerHTML = '<input type="text" placeholder="请输入细分场景">';
+            } else {
+                td.innerHTML = '<input type="text" placeholder="请输入">';
+            }
+            newRow.appendChild(td);
+        }
+        // 操作列：删除整组按钮
+        let tdOp = document.createElement("td");
+        tdOp.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">删除</button>';
+        newRow.appendChild(tdOp);
+        tbody.appendChild(newRow);
+    }
+
+    // 在当前场景组内新增子行（不显示场景单元格），更新组头 rowspan
+    function addSubRow(btn) {
+        let currentRow = btn.closest("tr");
+        let tbody = currentRow.parentNode;
+        // 找到当前组的组头（包含 .scene-cell 的那一行）
+        let groupHead = currentRow;
+        while (groupHead.previousElementSibling && !groupHead.querySelector('.scene-cell')) {
+            groupHead = groupHead.previousElementSibling;
+        }
+        let sceneCell = groupHead.querySelector('.scene-cell');
+        let currentRowspan = parseInt(sceneCell.getAttribute("rowspan")) || 1;
+        sceneCell.setAttribute("rowspan", currentRowspan + 1);
+        let headerRow = document.getElementById("capitalFlowTable").tHead.rows[0];
+        let colCount = headerRow.cells.length;
+        let newRow = document.createElement("tr");
+        // 子行从“细分场景”（索引1）开始添加单元格，直至操作列（不包含场景 cell）
+        for (let i = 1; i < colCount - 1; i++) {
+            let td = document.createElement("td");
+            if (i === 1) {
+                td.innerHTML = '<input type="text" placeholder="请输入细分场景">';
+            } else {
+                td.innerHTML = '<input type="text" placeholder="请输入">';
+            }
+            newRow.appendChild(td);
+        }
+        // 操作列
+        let tdOp = document.createElement("td");
+        tdOp.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">删除</button>';
+        newRow.appendChild(tdOp);
+        // 插入到当前组的最后
+        let lastGroupRow = groupHead;
+        let nextRow = groupHead.nextElementSibling;
+        while (nextRow && !nextRow.querySelector('.scene-cell')) {
+            lastGroupRow = nextRow;
+            nextRow = nextRow.nextElementSibling;
+        }
+        tbody.insertBefore(newRow, lastGroupRow.nextSibling);
+    }
+
+    // 删除行：如果为组头，则删除整个组；如果为子行，则更新组头的 rowspan
+    function deleteRow2(btn) {
+        let row = btn.closest("tr");
+        let tbody = row.parentNode;
+        if (row.querySelector('.scene-cell')) {
+            // 删除整个组（组头及所有连续子行）
+            let groupHead = row;
+            let nextRow = groupHead.nextElementSibling;
+            while (nextRow && !nextRow.querySelector('.scene-cell')) {
+                let temp = nextRow.nextElementSibling;
+                nextRow.remove();
+                nextRow = temp;
+            }
+            groupHead.remove();
+        } else {
+            // 子行：更新组头 rowspan后删除该行
+            let prevRow = row.previousElementSibling;
+            while (prevRow && !prevRow.querySelector('.scene-cell')) {
+                prevRow = prevRow.previousElementSibling;
+            }
+            if (prevRow && prevRow.querySelector('.scene-cell')) {
+                let sceneCell = prevRow.querySelector('.scene-cell');
+                let currentRowspan = parseInt(sceneCell.getAttribute("rowspan")) || 1;
+                sceneCell.setAttribute("rowspan", currentRowspan - 1);
+            }
+            row.remove();
+        }
+    }
 </script>
 </body>
 </html>
