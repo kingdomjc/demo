@@ -467,6 +467,7 @@
         <div class="section">
             <div class="section-header">
                 <div class="section-title">线下月结算</div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="window.location.href='offline_fee_formula.html'">跳转线下结费公式</button>
             </div>
             <div class="form-grid">
                 <div class="form-item">
@@ -507,7 +508,7 @@
             <div class="fees-container" style="margin-top:16px;">
                 <!-- 应收费用项 -->
                 <div class="fee-table receivable">
-                    <h3>应收费用项</h3>
+                    <h3>应收费用项<span style="color: var(--success);">*</span></h3>
                     <div class="table-container">
                         <table id="receivableTable">
                             <thead>
@@ -540,7 +541,7 @@
                 </div>
                 <!-- 应付费用项 -->
                 <div class="fee-table payable">
-                    <h3>应付费用项</h3>
+                    <h3>应付费用项<span style="color: var(--success);">*</span></h3>
                     <div class="table-container">
                         <table id="payableTable">
                             <thead>
@@ -616,7 +617,7 @@
                         </td>
                         <td>
                             <button type="button" class="btn btn-primary btn-sm link-account">关联账号</button>
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="openFeeFlowModal()">费用资金流</button>
+                            <a href="capital_flow_config.html" class="btn btn-secondary btn-sm">费用资金流</a>
                             <button type="button" class="btn btn-danger btn-sm">删除</button>
                         </td>
                     </tr>
@@ -630,13 +631,14 @@
             <div class="section-header">
                 <div class="section-title">项目关联的银行卡</div>
                 <button type="button" class="btn btn-success btn-sm" onclick="addBankCardRow()">+ 新增</button>
-                <a href="bank_account.html" class="btn btn-secondary btn-sm">跳转至银行账户管理</a>
+                <!-- 已移除跳转至银行账户管理的链接 -->
             </div>
             <div class="table-container">
                 <table id="bankCardTable">
                     <thead>
                     <tr>
                         <th>账户用途</th>
+                        <th>账户类型</th>
                         <th>银行账号</th>
                         <th>归属企业</th>
                         <th>操作</th>
@@ -644,19 +646,25 @@
                     </thead>
                     <tbody>
                     <tr data-id="1">
+                        <!-- 账户用途改为文本框 -->
                         <td>
-                            <select class="account-usage" onchange="updateBankAccount(this)">
-                                <option value="">请选择账户用途</option>
-                                <option value="代偿款账户">代偿款账户</option>
-                                <option value="保证金账户">保证金账户</option>
-                                <option value="线下还款账户">线下还款账户</option>
+                            <input type="text" placeholder="请输入账户用途">
+                        </td>
+                        <!-- 新增账户类型列 -->
+                        <td>
+                            <select class="account-type">
+                                <option value="">请选择账户类型</option>
+                                <option value="自有账户">自有账户</option>
+                                <option value="共管账户">共管账户</option>
+                                <option value="资方内部账户">资方内部账户</option>
+                                <option value="外部账户">外部账户</option>
                             </select>
                         </td>
                         <td>
                             <select class="bank-account" onchange="updateBankAccount(this)">
                                 <option value="">请选择银行账号</option>
-                                <option value="6222020000000001" data-enterprise="企业A">自有账户-工商银行-北京分行-6222020000000001</option>
-                                <option value="6222020000000002" data-enterprise="企业B">外部账户-工商银行-北京分行-6222020000000002</option>
+                                <option value="6222020000000001" data-enterprise="企业A">工商银行-北京分行-6222020000000001</option>
+                                <option value="6222020000000002" data-enterprise="企业B">工商银行-北京分行-6222020000000002</option>
                             </select>
                         </td>
                         <td class="enterprise">
@@ -677,9 +685,9 @@
                 <h3 style="margin-bottom:16px">关联银行账号</h3>
                 <select class="account-select" style="width:100%">
                     <option value="">请选择银行账号</option>
-                    <option value="6222020000000001" data-enterprise="企业A">自有账户-工商银行-北京分行-6222020000000001</option>
-                    <option value="6222020000000002" data-enterprise="企业B">外部账户-工商银行-北京分行-6222020000000002</option>
-                    <option value="6222020000000003" data-enterprise="企业C">共管账户-工商银行-北京分行-6222020000000003</option>
+                    <option value="6222020000000001" data-enterprise="企业A">工商银行-北京分行-6222020000000001</option>
+                    <option value="6222020000000002" data-enterprise="企业B">工商银行-北京分行-6222020000000002</option>
+                    <option value="6222020000000003" data-enterprise="企业C">工商银行-北京分行-6222020000000003</option>
                 </select>
                 <div class="selected-accounts" id="selectedAccounts"></div>
                 <div style="margin-top:16px;text-align:right">
@@ -1223,28 +1231,32 @@
         const tbody = document.getElementById('bankCardTable').tBodies[0];
         const newRow = tbody.insertRow(-1);
         newRow.innerHTML = `
-          <td>
-              <select class="account-usage" onchange="updateBankAccount(this)">
-                  <option value="">请选择账户用途</option>
-                  <option value="代偿款账户">代偿款账户</option>
-                  <option value="保证金账户">保证金账户</option>
-                  <option value="线下还款账户">线下还款账户</option>
-              </select>
-          </td>
-          <td>
-              <select class="bank-account" onchange="updateBankAccount(this)">
-                  <option value="">请选择银行账号</option>
-                  <option value="6222020000000001" data-enterprise="企业A">自有账户-工商银行-北京分行-6222020000000001</option>
-                  <option value="6222020000000002" data-enterprise="企业B">外部账户-工商银行-北京分行-6222020000000002</option>
-              </select>
-          </td>
-          <td class="enterprise">
-              <span></span>
-          </td>
-          <td>
-              <button type="button" class="btn btn-danger btn-sm" onclick="deleteBankCardRow(this)">删除</button>
-          </td>
-        `;
+      <td>
+          <input type="text" placeholder="请输入账户用途">
+      </td>
+      <td>
+          <select class="account-type">
+              <option value="">请选择账户类型</option>
+              <option value="自有账户">自有账户</option>
+              <option value="共管账户">共管账户</option>
+              <option value="资方内部账户">资方内部账户</option>
+              <option value="外部账户">外部账户</option>
+          </select>
+      </td>
+      <td>
+          <select class="bank-account" onchange="updateBankAccount(this)">
+              <option value="">请选择银行账号</option>
+              <option value="6222020000000001" data-enterprise="企业A">工商银行-北京分行-6222020000000001</option>
+              <option value="6222020000000002" data-enterprise="企业B">工商银行-北京分行-6222020000000002</option>
+          </select>
+      </td>
+      <td class="enterprise">
+          <span></span>
+      </td>
+      <td>
+          <button type="button" class="btn btn-danger btn-sm" onclick="deleteBankCardRow(this)">删除</button>
+      </td>
+    `;
     }
 
     function updateBankAccount(select) {
