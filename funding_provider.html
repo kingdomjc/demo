@@ -1180,13 +1180,18 @@
             const tbody = document.getElementById('bankCardTable').tBodies[0];
             const newRow = tbody.insertRow(-1);
             newRow.innerHTML = `
+              <!-- 账户用途改为文本框 -->
+            <td>
+            <input type="text" placeholder="请输入账户用途">
+            </td>
               <td>
-                  <select class="account-usage">
-                      <option value="">请选择账户用途</option>
-                      <option value="代偿款账户">代偿款账户</option>
-                      <option value="保证金账户">保证金账户</option>
-                      <option value="线下还款账户">线下还款账户</option>
-                  </select>
+                            <select class="account-type">
+                                <option value="">请选择账户类型</option>
+                                <option value="自有账户">自有账户</option>
+                                <option value="共管账户">共管账户</option>
+                                <option value="资方内部账户">资方内部账户</option>
+                                <option value="外部账户">外部账户</option>
+                            </select>
               </td>
               <td>${accountText}</td>
               <td class="enterprise">
